@@ -109,6 +109,20 @@ df = df.dropna(subset=["completed"])
 df.shape
 ```
 
+```{python}
+Creator=df.groupby(['Assignee']).size().reset_index().rename(columns={0:'count'}).sort_values(by=['count'])
+Creator
+```
+
+```{python}
+df_aymone=df[df.Assignee =="bernes.karacay.1"]
+df_aymone.shape
+```
+
+```{python}
+df_aymone
+```
+
 ### Quarterly dates for first run: 7/1/19-9/30/19
 
 
@@ -120,12 +134,17 @@ df.shape
 ```
 
 ```{python}
-df=df[df.completed <="30/Sep/19"]
-df.shape
+#df=df[df.completed <="30/Sep/19"]
+#df.shape
 ```
 
 ```{python}
 df.head(1)
+```
+
+```{python}
+Creator=df.groupby(['Assignee']).size().reset_index().rename(columns={0:'count'}).sort_values(by=['count'])
+Creator
 ```
 
 # Metrics Requested
@@ -167,8 +186,8 @@ df2.shape
 ```
 
 ```{python}
-df2=df2[df2.started <="30/Sep/19"]
-df2.shape
+# df2=df2[df2.started <="30/Sep/19"]
+# df2.shape
 ```
 
 Percentage tickets closed of those submitted during the quarter
@@ -243,6 +262,24 @@ df.time_to_complete.describe()
 
 ```
 
+### exclude recurring
+
+```{python}
+df["RECURRING"]=0
+df.loc[df['Summary'].str.contains("RECURRING",case=False),["RECURRING"]]=1
+df_no_recurring=df.loc[df['RECURRING'] == 0]
+```
+
+```{python}
+df_no_recurring.shape
+```
+
+How long a ticket took from opening to close (Status “Done”) (mean, median, range)(with out recurring)
+
+```{python}
+df_no_recurring.time_to_complete.describe()
+```
+
 ### How many comments a ticket had, on average - measuring activity/back-and-forth (count)
 
 ```{python}
@@ -273,7 +310,7 @@ comment_df.full_count.describe()
 ### How many tickets (count) missing:Due Date
 
 ```{python}
-df.head(10)
+df.head(2)
 
 ```
 
@@ -322,6 +359,10 @@ Creator=df.groupby(['Creator']).size().reset_index().rename(columns={0:'count'})
 Creator
 ```
 
+```{python}
+
+```
+
 ## Most common types of requests - include all tickets from previous quarter
 
 
@@ -336,7 +377,7 @@ df["RECURRING"]=0
 
 ```{python}
 
-df.loc[df['Summary'].str.contains(" RECURRING ",case=False),["RECURRING"]]=1
+df.loc[df['Summary'].str.contains("RECURRING",case=False),["RECURRING"]]=1
 ```
 
 ```{python}
@@ -346,16 +387,16 @@ df["RECURRING"].sum(skipna = True)
 ### Ad Hoc
 
 ```{python}
-df["Ad Hoc"]=0
+df["AdHoc"]=0
 ```
 
 ```{python}
 
-df.loc[df['Summary'].str.contains(" Ad Hoc ",case=False),["Ad Hoc"]]=1
+df.loc[df['Summary'].str.contains("Ad Hoc",case=False),["AdHoc"]]=1
 ```
 
 ```{python}
-df["Ad Hoc"].sum(skipna = True) 
+df["AdHoc"].sum(skipna = True) 
 ```
 
 ### CDR
@@ -381,7 +422,7 @@ df["RDR"]=0
 
 ```{python}
 
-df.loc[df['Summary'].str.contains("RDR ",case=False),["RDR"]]=1
+df.loc[df['Summary'].str.contains("RDR",case=False),["RDR"]]=1
 ```
 
 ```{python}
