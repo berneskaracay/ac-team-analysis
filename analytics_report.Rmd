@@ -41,7 +41,6 @@ sys.path.append('lib/')
 ```
 
 ```{python}
-
 pd.options.display.max_rows = 999
 pd.options.display.max_columns = 999
 pd.options.display.max_colwidth = 999
@@ -90,17 +89,14 @@ df.total_days.describe()
 ### exclude recurring
 
 ```{python}
-df_no_recurring=df.loc[df['RECURRING'] == 0]
-```
-
-```{python}
-df_no_recurring.shape
+df_nore.shape
 ```
 
 How long a ticket took from opening to close (Status “Done”) (mean, median, range)(with out recurring)
 
 ```{python}
-df_no_recurring.total_days.describe()
+df_nore.total_days.describe()
+
 ```
 
 ### How many comments a ticket had, on average - measuring activity/back-and-forth (count)
@@ -230,7 +226,9 @@ graph_table.plot.line(x = 'time', y = 'count')
 ### Percentage tickets closed of those submitted during the quarter
 
 ```{python}
-df=df[df.started >="1/Oct/19"]
+df=df[df.started >="1/Jan/19"]
+df_nore=df_nore[df_nore.started >="1/Oct/19"]
+
 df.shape
 ```
 
@@ -239,7 +237,8 @@ submitted2=df.shape[0]
 ```
 
 ```{python}
-df=df[df.started <="30/Dec/19"]
+df=df[df.started <="30/Mar/19"]
+df_nore=df_nore[df_nore.started <="30/Dec/19"]
 df.shape
 ```
 

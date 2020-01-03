@@ -149,28 +149,29 @@ for index, row in df.iterrows():
     df.at[index,'total_days'] = np.busday_count(row['started'].date(),row['completed'].date()) #set UBR1_RaceEthnicity field to value returned from UBRRaceEthnicity() 
 
 ###############################################################################
-# ### exclude recurring
-
-# df["RECURRING"]=0
-# df.loc[df['Summary'].str.contains("RECURRING",case=False),["RECURRING"]]=1
-
-
-""
-comment_df=df[["Comment","Comment.1","Comment.2","Comment.3","Comment.4","Comment.5","Comment.6","Comment.7","Comment.8","Comment.9","Comment.10","Comment.11","Comment.12","Comment.13","Comment.14","Comment.15","Comment.16","Comment.17","Comment.18","Comment.19","Comment.20","Comment.21","Comment.22","Comment.23","Comment.24","Comment.25","Comment.26","Comment.27","Comment.28","Comment.29","Comment.30","Comment.31","Comment.32","Comment.33","Comment.34","Comment.35","Comment.36","Comment.37","Comment.38","Comment.39","Comment.40","Comment.41","Comment.42","Comment.43","Comment.44","Comment.45","Comment.46","Comment.47","Comment.48","Comment.49"]]
-
-""
-comment_df.head(1)
-
-""
-comment_df['full_count'] = comment_df.apply(lambda x: x.count(), axis=1)
-
-###############################################################################
 # ### recurring
 
 df["RECURRING"]=0
 
 ""
 df.loc[df['Summary'].str.contains("RECURRING",case=False),["RECURRING"]]=1
+
+###############################################################################
+# ### comment 
+
+# df["RECURRING"]=0
+# df.loc[df['Summary'].str.contains("RECURRING",case=False),["RECURRING"]]=1
+
+
+""
+
+comment_df=df.loc[:,df.columns.str.contains('Comment')]
+
+""
+comment_df.head(1)
+
+""
+comment_df['full_count'] = comment_df.apply(lambda x: x.count(), axis=1)
 
 ###############################################################################
 # ### Ad Hoc
