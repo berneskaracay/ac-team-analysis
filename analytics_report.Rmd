@@ -1,0 +1,425 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.3.0
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+# # !pip install ipywidgets
+# # !pip install -U -q ipywidgets
+```
+
+```{python}
+# # !jupyter nbextension enable --py widgetsnbextension
+```
+
+```{python}
+# pip install plotly==4.4.1
+```
+
+```{python}
+# pip install chart_studio
+```
+
+```{python}
+import os
+import sys
+# Add the libraries folder path to the sys.path list
+sys.path.append('lib/')
+```
+
+```{python}
+# %run prepare_data.py
+```
+
+```{python}
+
+pd.options.display.max_rows = 999
+pd.options.display.max_columns = 999
+pd.options.display.max_colwidth = 999
+```
+
+```{python}
+df.head(1)
+```
+
+# Metrics Requested
+
+
+## Movement  - excluding ongoing/recurring tickets
+
+
+How long each ticket spent in each stage (mean, median, range).
+Sadly we dont have time forready qc, under qc or etc.
+
+
+### created to updated
+
+```{python}
+df.time_to_updated.describe()
+```
+
+### due date
+
+```{python}
+df.time_due_date.describe()
+```
+
+## Efficiency   - excluding ongoing/recurring tickets
+
+
+How long a ticket took from opening to close (Status “Done”) (mean, median, range)
+
+```{python}
+df.time_to_complete.describe()
+
+```
+
+```{python}
+df.total_days.describe()
+```
+
+### exclude recurring
+
+```{python}
+df_no_recurring=df.loc[df['RECURRING'] == 0]
+```
+
+```{python}
+df_no_recurring.shape
+```
+
+How long a ticket took from opening to close (Status “Done”) (mean, median, range)(with out recurring)
+
+```{python}
+df_no_recurring.total_days.describe()
+```
+
+### How many comments a ticket had, on average - measuring activity/back-and-forth (count)
+
+
+How many comments a ticket had, on average - measuring activity/back-and-forth (count)
+
+```{python}
+comment_df.full_count.describe()
+```
+
+## Cleanliness  - excluding ongoing/recurring tickets
+
+
+### How many tickets (count) missing:Due Date
+
+```{python}
+df["due_date"].isnull().sum()
+```
+
+### How many tickets (count) missing:Open Date
+
+```{python}
+df["Created"].isnull().sum()
+```
+
+### How many tickets (count) missing:Custom field (Lead Analyst)
+
+```{python}
+df["Custom field (Lead Analyst)"].isnull().sum()
+```
+
+### How many tickets (count) missing:Assignee
+
+```{python}
+df["Assignee"].isnull().sum()
+```
+
+### How many tickets (count) missing:Reporter
+
+```{python}
+df["Reporter"].isnull().sum()
+```
+
+### How many tickets (count) missing:Notebook
+
+
+We cannot categorize attacment
+
+
+## Most common requesters - include all tickets from previous quarter
+
+```{python}
+Creator=df.groupby(['Creator']).size().reset_index().rename(columns={0:'count'}).sort_values(by=['count'])
+Creator
+```
+
+## Most common types of requests - include all tickets from previous quarter
+
+
+Organize by ticket title tag first - count how many Ad Hoc, how many recurring, etc. - include any tickets opened or moved during that quarter
+
+
+### recurring
+
+```{python}
+df["RECURRING"].sum(skipna = True) 
+```
+
+### Ad Hoc
+
+```{python}
+df["AdHoc"].sum(skipna = True) 
+```
+
+### CDR
+
+```{python}
+df["CDR"].sum(skipna = True) 
+```
+
+### RDR
+
+```{python}
+df["RDR"].sum(skipna = True) 
+```
+
+### Data pull
+
+```{python}
+df["Data pull"].sum(skipna = True) 
+```
+
+## Busy season - use all tickets since the inception of the board
+
+
+One version with recurring/ongoing tickets included
+
+```{python}
+graph_table=(df['started1'].sub(pd.to_timedelta(df['started1'].dt.dayofweek, unit='D'))
+    .value_counts(sort=False)).reset_index().rename(columns={'started1':'count','index':'time'}).sort_values(by=['time'])
+graph_table
+```
+
+```{python}
+graph_table.plot.line(x = 'time', y = 'count')
+```
+
+One version WITHOUT recurring/ongoing tickets included
+
+```{python}
+graph_table=(df_nore['started1'].sub(pd.to_timedelta(df_nore['started1'].dt.dayofweek, unit='D'))
+    .value_counts(sort=False)).reset_index().rename(columns={'started1':'count','index':'time'}).sort_values(by=['time'])
+graph_table
+```
+
+```{python}
+graph_table.plot.line(x = 'time', y = 'count')
+```
+
+# Quarterly
+
+
+## Metrics Requested
+
+
+### Percentage tickets closed of those submitted during the quarter
+
+```{python}
+df=df[df.started >="1/Oct/19"]
+df.shape
+```
+
+```{python}
+submitted2=df.shape[0]
+```
+
+```{python}
+df=df[df.started <="30/Dec/19"]
+df.shape
+```
+
+```{python}
+completed=df.shape[0]
+```
+
+Percentage tickets closed of those submitted during the quarter
+
+```{python}
+round((completed/submitted2)*100,0)
+```
+
+## Movement  - excluding ongoing/recurring tickets
+
+
+How long each ticket spent in each stage (mean, median, range).
+Sadly we dont have time forready qc, under qc or etc.
+
+
+### created to updated
+
+```{python}
+df.time_to_updated.describe()
+```
+
+### due date
+
+```{python}
+df.time_due_date.describe()
+```
+
+## Efficiency   - excluding ongoing/recurring tickets
+
+
+How long a ticket took from opening to close (Status “Done”) (mean, median, range)
+
+```{python}
+df.time_to_complete.describe()
+
+```
+
+```{python}
+df.total_days.describe()
+```
+
+### exclude recurring
+
+```{python}
+df_no_recurring=df.loc[df['RECURRING'] == 0]
+```
+
+```{python}
+df_no_recurring.shape
+```
+
+How long a ticket took from opening to close (Status “Done”) (mean, median, range)(with out recurring)
+
+```{python}
+df_no_recurring.total_days.describe()
+```
+
+### How many comments a ticket had, on average - measuring activity/back-and-forth (count)
+
+
+How many comments a ticket had, on average - measuring activity/back-and-forth (count)
+
+```{python}
+comment_df.full_count.describe()
+```
+
+## Cleanliness  - excluding ongoing/recurring tickets
+
+
+### How many tickets (count) missing:Due Date
+
+```{python}
+df["due_date"].isnull().sum()
+```
+
+### How many tickets (count) missing:Open Date
+
+```{python}
+df["Created"].isnull().sum()
+```
+
+### How many tickets (count) missing:Custom field (Lead Analyst)
+
+```{python}
+df["Custom field (Lead Analyst)"].isnull().sum()
+```
+
+### How many tickets (count) missing:Assignee
+
+```{python}
+df["Assignee"].isnull().sum()
+```
+
+### How many tickets (count) missing:Reporter
+
+```{python}
+df["Reporter"].isnull().sum()
+```
+
+### How many tickets (count) missing:Notebook
+
+
+We cannot categorize attacment
+
+
+## Most common requesters - include all tickets from previous quarter
+
+```{python}
+Creator=df.groupby(['Creator']).size().reset_index().rename(columns={0:'count'}).sort_values(by=['count'])
+Creator
+```
+
+## Most common types of requests - include all tickets from previous quarter
+
+
+Organize by ticket title tag first - count how many Ad Hoc, how many recurring, etc. - include any tickets opened or moved during that quarter
+
+
+### recurring
+
+```{python}
+df["RECURRING"].sum(skipna = True) 
+```
+
+### Ad Hoc
+
+```{python}
+df["AdHoc"].sum(skipna = True) 
+```
+
+### CDR
+
+```{python}
+df["CDR"].sum(skipna = True) 
+```
+
+### RDR
+
+```{python}
+df["RDR"].sum(skipna = True) 
+```
+
+### Data pull
+
+```{python}
+df["Data pull"].sum(skipna = True) 
+```
+
+## Busy season - use all tickets since the inception of the board
+
+
+One version with recurring/ongoing tickets included
+
+```{python}
+graph_table=(df['started1'].sub(pd.to_timedelta(df['started1'].dt.dayofweek, unit='D'))
+    .value_counts(sort=False)).reset_index().rename(columns={'started1':'count','index':'time'}).sort_values(by=['time'])
+graph_table
+```
+
+```{python}
+graph_table.plot.line(x = 'time', y = 'count')
+```
+
+One version WITHOUT recurring/ongoing tickets included
+
+```{python}
+graph_table=(df_nore['started1'].sub(pd.to_timedelta(df_nore['started1'].dt.dayofweek, unit='D'))
+    .value_counts(sort=False)).reset_index().rename(columns={'started1':'count','index':'time'}).sort_values(by=['time'])
+graph_table
+```
+
+```{python}
+graph_table.plot.line(x = 'time', y = 'count')
+```
+
+```{python}
+
+```
