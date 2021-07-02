@@ -1,4 +1,4 @@
-# ac-team-analysis 1
+# ac-team-analysis
 
 Date Requested: 11/01/19
 Proposed Deadline: Ongoing - quarterly refresh (1/1, 4/1, 7/1, 10/1)
